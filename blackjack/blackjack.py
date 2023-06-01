@@ -1,50 +1,55 @@
-from deck import Deck
-from player import Player
+from blackjack.deck import Deck
+from blackjackplayer import Player
 
 class Blackjack:
     def __init__(self):
         self.deck = Deck()
-        self.deck.fiftytwo()
+        self.deck.generate()
         self.player = Player(False, self.deck)
         self.dealer = Player(True, self.deck)
-        
+
     def play(self):
-        player_status = self.player.draw()
-        dealer_status = self.dealer.draw()
-        
+        p_status = self.player.deal()
+        d_status = self.dealer.deal()
+
         self.player.show()
-        
-        if player_status == 1:
-            print("Player's game - blackjack baby!")
-            if dealer_status == 1:
-                print("Tie - Dealer and Player got blackjack!")
+
+        if p_status == 1:
+            print("Player got Blackjack! Congrats!")
+            if d_status == 1:
+                print("Dealer and Player got Blackjack! It's a push. (Tie)")
             return 1
-        
-        cmd = ""                                    # this is where you play blackjack
-        while cmd != "Stay":
+
+        cmd = ""
+        while cmd != "Stand":
             bust = 0
-            cmd = input("Hit or Stay?")
-            
+            cmd = input("Hit or Stand? ")
+
             if cmd == "Hit":
                 bust = self.player.hit()
                 self.player.show()
             if bust == 1:
-                print("Better luck next time. Player busted")
+                print("Player busted. Good Game!")
+                return 1
+        print("\n")
+        self.dealer.show()
+        if d_status == 1:
+            print("Dealer got Blackjack! Better luck next time!")
             return 1
-            
-            while self.dealer.check_score() < 17:            # dealer hits until they get 17 or over
-                if self.dealer.hit() == 1:
-                    self.dealer.show()
-                    print("Dealer busted. You win!")
-                    return 1
+
+        while self.dealer.check_score() < 17:
+            if self.dealer.hit() == 1:
                 self.dealer.show()
-                
-            if self.dealer.check_score() == self.player.check_score():
-                print("Tie - oh well")
-            elif self.dealer.check_score() > self.player.check_score():
-                print("Dealer's game.")
-            elif self.dealer.check_score() < self.player.check_score():
-                print("Player wins! Congrats!")
-                
+                print("Dealer busted. Congrats!")
+                return 1
+            self.dealer.show()
+
+        if self.dealer.check_score() == self.player.check_score():
+            print("It's a Push (Tie). Better luck next time!")
+        elif self.dealer.check_score() > self.player.check_score():
+            print("Dealer wins. Good Game!")
+        elif self.dealer.check_score() < self.player.check_score():
+            print("Player wins. Congratulations!")
+
 b = Blackjack()
 b.play()
